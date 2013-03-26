@@ -13,7 +13,7 @@
 #define NRECENTS 5
 
 @interface TitleTableVC ()
-@property (nonatomic, strong) NSArray *alphabetizedPhotos;
+@property (nonatomic, strong) NSArray *alphabetizedTitles;
 @end
 
 @implementation TitleTableVC
@@ -45,7 +45,7 @@
     return [self.photoArray count];
 }
 
-- (NSArray *) alphabetizedPhotos {
+- (NSArray *) alphabetizedTitles {
     NSArray *array = [self.photoArray sortedArrayUsingComparator:^(id a, id b){
         return [ a[@"title"] caseInsensitiveCompare:b[@"title"] ];
     }];
@@ -59,8 +59,8 @@
     
         //description added to the following to avoid a crash if the content is NSNULL
     if (!!!self.sortByRecent) {
-        cell.title.text = [ self.alphabetizedPhotos[indexPath.row][@"title"] description ];
-        cell.subtitle.text = [ self.alphabetizedPhotos[indexPath.row][@"description"][@"_content"] description ];
+        cell.title.text = [ self.alphabetizedTitles[indexPath.row][@"title"] description ];
+        cell.subtitle.text = [ self.alphabetizedTitles[indexPath.row][@"description"][@"_content"] description ];
     } else {
         cell.title.text = [ self.photoArray[indexPath.row][@"title"] description ];
         cell.subtitle.text = [ self.photoArray[indexPath.row][@"description"][@"_content"] description ];
@@ -78,8 +78,8 @@
         photo = self.recents[indexPath.row];
         title = [[self.recents[indexPath.row] objectForKey:@"title"] description];
     } else {
-        photo = self.alphabetizedPhotos[indexPath.row];
-        title = [[self.alphabetizedPhotos[indexPath.row] objectForKey:@"title"] description];
+        photo = self.alphabetizedTitles[indexPath.row];
+        title = [[self.alphabetizedTitles[indexPath.row] objectForKey:@"title"] description];
     }
     
     NSURL *url;
