@@ -13,6 +13,12 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    
+    NSString *tempPath = NSTemporaryDirectory();
+    NSString *fileName = @"testFile1.txt";
+    NSString *filePath = [tempPath stringByAppendingPathComponent:fileName];
+    NSLog (@"filePath: %@", filePath);
+    
     return YES;
 }
 							
