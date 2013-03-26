@@ -9,14 +9,24 @@
 #import "TitleTableVC.h"
 #import "FlickrFetcher.h"
 #import "AnyCell.h"
+#import "PhotoData.h"
 
 #define NRECENTS 5
 
 @interface TitleTableVC ()
 @property (nonatomic, strong) NSArray *alphabetizedTitles;
+@property (nonatomic, strong) PhotoData *db;
+
 @end
 
 @implementation TitleTableVC
+
+-(PhotoData *) db {
+    if (!!!_db) {
+        _db = [[PhotoData alloc] init];
+    }
+    return _db;
+}
 
 - (void) setPhotoArray:(NSArray *)photoArray {
     _photoArray = photoArray;
@@ -82,13 +92,7 @@
         title = [[self.alphabetizedTitles[indexPath.row] objectForKey:@"title"] description];
     }
     
-    NSURL *url;
-    if ( [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad ) {
-        url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatOriginal];
-    } else {
-        url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatLarge];
-    }
-    
+    NSURL *url = [self.db urlForPhoto:photo];
     if ( [segue.identifier isEqualToString:@"ShowRecentImage"] || [segue.identifier isEqualToString:@"ShowImage"] ) {
         if ( [segue.destinationViewController respondsToSelector:@selector(setImageURL:)] ) {
             [segue.destinationViewController performSelector:@selector(setImageURL:) withObject:url];

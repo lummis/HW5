@@ -12,7 +12,6 @@
 #import "PhotoData.h"
 
 @interface TagTableVC ()
-
 @property (nonatomic, strong) PhotoData *db;
 @end
 

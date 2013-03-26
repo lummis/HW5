@@ -44,4 +44,14 @@
     return _flickrTagDict;
 }
 
+- (NSURL *) urlForPhoto:(NSDictionary *)photo {
+    NSURL *url;
+    if ( [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad ) {
+        url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatOriginal];
+    } else {
+        url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatLarge];
+    }
+    return url;
+}
+
 @end
