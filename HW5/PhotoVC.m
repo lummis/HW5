@@ -13,10 +13,19 @@
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic) BOOL userHasZoomed; //set to NO on new photo, YES the first time user zooms
 @property (nonatomic, strong) UIPopoverController *urlPopover;
+@property (nonatomic, strong) UIActivityIndicatorView *spinner;
 @end
 
 @implementation PhotoVC
 
+- (UIActivityIndicatorView *) spinner {
+    if (!!!_spinner) {
+        _spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        _spinner.hidesWhenStopped = YES;
+        _spinner.frame = CGRectMake(self.view.bounds.size.width / 2., self.view.bounds.size.height / 3., 0., 0.);
+    }
+    return _spinner;
+}
 
 -(BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
 {
@@ -88,6 +97,10 @@
         self.scrollView.contentSize = CGSizeZero;   //is set below but only if we get a valid image
         self.imageView.image = nil;
         
+//        self.spinner.frame = CGRectMake(100., 100., 50., 50.);
+        [self.view addSubview:self.spinner];
+        [self.spinner startAnimating];
+        
         NSURL *imageURL = self.imageURL;
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         dispatch_queue_t imageFetchQ = dispatch_queue_create("imageFetchQ", NULL);
@@ -100,6 +113,7 @@
             if (self.imageURL == imageURL) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (image) {
+                        [self.spinner stopAnimating];
                         self.scrollView.zoomScale = 1.0;
                         self.scrollView.contentSize = image.size;
                         self.imageView.image = image;
