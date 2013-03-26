@@ -13,8 +13,6 @@
 
 @interface TagTableVC ()
 
-@property (nonatomic, strong) NSMutableDictionary *flickrTagDict;
-@property (nonatomic, strong) NSArray *alphabetizedTags;
 @property (nonatomic, strong) PhotoData *db;
 @end
 
@@ -32,29 +30,6 @@
     self.db.flickrPhotoArray = nil;
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
-    
-}
-
-//key is a photo tag. value is number of photos with that tag. a photo can have many tags
-- (NSMutableDictionary *) flickrTagDict {
-    if (!!!_flickrTagDict) {
-        NSMutableDictionary *md = [[NSMutableDictionary alloc] initWithCapacity:15];
-        for (NSDictionary *photo in self.db.flickrPhotoArray) {
-            NSArray *currentTags = [photo[@"tags"] componentsSeparatedByString:@" "];
-            for (NSString *tag in currentTags) {
-                md[tag] = @( [md[tag] intValue] + 1 );   //increment count of photos with this tag
-            }
-            currentTags = nil;
-        }
-        [md removeObjectsForKeys:@[@"cs193pspot", @"portrait", @"landscape"]];
-        _flickrTagDict = md;
-    }
-    
-    self.alphabetizedTags = [[_flickrTagDict allKeys] sortedArrayUsingComparator:^(id a, id b){
-        return [a caseInsensitiveCompare:b];
-    }];
-    
-    return _flickrTagDict;
 }
 
 - (void)viewDidLoad
@@ -77,7 +52,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.flickrTagDict count];
+    return [self.db.flickrTagDict count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -89,9 +64,9 @@
     
     if ( [cell isMemberOfClass:[AnyCell class]] ) {
         AnyCell *tagCell = (AnyCell *)cell;
-        NSString *theTag = self.alphabetizedTags[indexPath.row];
+        NSString *theTag = self.db.alphabetizedTags[indexPath.row];
         tagCell.title.text = [theTag capitalizedStringWithLocale:[NSLocale currentLocale]];
-        int nPix = [ self.flickrTagDict[theTag] intValue];
+        int nPix = [ self.db.flickrTagDict[theTag] intValue];
         NSString *s = nPix == 1 ? @"photo" : @"photos";
         tagCell.subtitle.text = [[NSString stringWithFormat:@"%d ", nPix] stringByAppendingString:s];
     }

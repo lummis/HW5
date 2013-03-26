@@ -10,4 +10,6 @@
 
 @interface PhotoData : NSObject
 @property (nonatomic, strong) NSArray *flickrPhotoArray;
+@property (nonatomic, strong) NSMutableDictionary *flickrTagDict;
+@property (nonatomic, strong) NSArray *alphabetizedTags;
 @end
