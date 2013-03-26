@@ -28,6 +28,7 @@
 		7D08958716FE85A200C98401 /* icon credit.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7D08958416FE85A200C98401 /* icon credit.txt */; };
 		7D08958816FE85A200C98401 /* clock.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D08958516FE85A200C98401 /* clock.png */; };
 		7D08958916FE85A200C98401 /* tag.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D08958616FE85A200C98401 /* tag.png */; };
+		7DF7E920170219AC000A3765 /* PhotoData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DF7E91F170219AC000A3765 /* PhotoData.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +66,8 @@
 		7D08958416FE85A200C98401 /* icon credit.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "icon credit.txt"; sourceTree = "<group>"; };
 		7D08958516FE85A200C98401 /* clock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clock.png; sourceTree = "<group>"; };
 		7D08958616FE85A200C98401 /* tag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tag.png; sourceTree = "<group>"; };
+		7DF7E91E170219AC000A3765 /* PhotoData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoData.h; sourceTree = "<group>"; };
+		7DF7E91F170219AC000A3765 /* PhotoData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoData.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,10 +128,7 @@
 				7D08957616FE857500C98401 /* TitleTableVC.m */,
 				7D08957716FE857500C98401 /* RecentsTableVC.h */,
 				7D08957816FE857500C98401 /* RecentsTableVC.m */,
-				7D08957916FE857500C98401 /* FlickrAPIKey.h */,
-				7D08957A16FE857500C98401 /* FlickrFetcher.h */,
-				7D08957B16FE857500C98401 /* FlickrFetcher.m */,
-				7D08957C16FE857500C98401 /* RLMacros.h */,
+				7DF7E91D17021872000A3765 /* Model */,
 				7D08958A16FE85AB00C98401 /* Tab Bar Icons */,
 				7D08954A16FE847D00C98401 /* Supporting Files */,
 			);
@@ -138,6 +138,7 @@
 		7D08954A16FE847D00C98401 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				7D08957C16FE857500C98401 /* RLMacros.h */,
 				7D08955216FE847D00C98401 /* AppDelegate.h */,
 				7D08955316FE847D00C98401 /* AppDelegate.m */,
 				7D08954B16FE847D00C98401 /* HW5-Info.plist */,
@@ -159,6 +160,18 @@
 				7D08958616FE85A200C98401 /* tag.png */,
 			);
 			name = "Tab Bar Icons";
+			sourceTree = "<group>";
+		};
+		7DF7E91D17021872000A3765 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				7DF7E91E170219AC000A3765 /* PhotoData.h */,
+				7DF7E91F170219AC000A3765 /* PhotoData.m */,
+				7D08957916FE857500C98401 /* FlickrAPIKey.h */,
+				7D08957A16FE857500C98401 /* FlickrFetcher.h */,
+				7D08957B16FE857500C98401 /* FlickrFetcher.m */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -240,6 +253,7 @@
 				7D08958116FE857500C98401 /* TitleTableVC.m in Sources */,
 				7D08958216FE857500C98401 /* RecentsTableVC.m in Sources */,
 				7D08958316FE857500C98401 /* FlickrFetcher.m in Sources */,
+				7DF7E920170219AC000A3765 /* PhotoData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,6 +370,7 @@
 				7D08956816FE847D00C98401 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

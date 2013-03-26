@@ -9,35 +9,37 @@
 #import "TagTableVC.h"
 #import "FlickrFetcher.h"
 #import "AnyCell.h"
+#import "PhotoData.h"
 
 @interface TagTableVC ()
-@property (nonatomic, strong) NSArray *flickrPhotoArray;
+
 @property (nonatomic, strong) NSMutableDictionary *flickrTagDict;
 @property (nonatomic, strong) NSArray *alphabetizedTags;
+@property (nonatomic, strong) PhotoData *db;
 @end
 
 @implementation TagTableVC
 
+-(PhotoData *) db {
+    if (!!!_db) {
+        _db = [[PhotoData alloc] init];
+    }
+    return _db;
+}
+
 - (void) refreshPhotoArray {
     LOG
-    self.flickrPhotoArray = nil;
+    self.db.flickrPhotoArray = nil;
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
     
-}
-
-- (NSArray *) flickrPhotoArray {
-    if (!!!_flickrPhotoArray){
-        _flickrPhotoArray = [FlickrFetcher stanfordPhotos];
-    }
-    return _flickrPhotoArray;
 }
 
 //key is a photo tag. value is number of photos with that tag. a photo can have many tags
 - (NSMutableDictionary *) flickrTagDict {
     if (!!!_flickrTagDict) {
         NSMutableDictionary *md = [[NSMutableDictionary alloc] initWithCapacity:15];
-        for (NSDictionary *photo in self.flickrPhotoArray) {
+        for (NSDictionary *photo in self.db.flickrPhotoArray) {
             NSArray *currentTags = [photo[@"tags"] componentsSeparatedByString:@" "];
             for (NSString *tag in currentTags) {
                 md[tag] = @( [md[tag] intValue] + 1 );   //increment count of photos with this tag
@@ -103,7 +105,7 @@
         if ( [segue.identifier isEqualToString:@"ShowTitles"] ) {
             if ( [segue.destinationViewController respondsToSelector:@selector(setPhotoArray:)] ) {
                 NSMutableArray *itemsWithThisTag = [[NSMutableArray alloc] initWithCapacity:1];
-                for (NSDictionary *d in self.flickrPhotoArray) {
+                for (NSDictionary *d in self.db.flickrPhotoArray) {
                     if ( [d[@"tags"] rangeOfString:selectedTag].location != NSNotFound ) {
                         [itemsWithThisTag addObject:d];
                     }
