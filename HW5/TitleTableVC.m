@@ -88,7 +88,13 @@
         title = [[self.alphabetizedPhotos[indexPath.row] objectForKey:@"title"] description];
     }
     
-    NSURL *url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatLarge];
+    NSURL *url;
+    if ( [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad ) {
+        url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatOriginal];
+    } else {
+        url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatLarge];
+    }
+    
     if ( [segue.identifier isEqualToString:@"ShowRecentImage"] || [segue.identifier isEqualToString:@"ShowImage"] ) {
         if ( [segue.destinationViewController respondsToSelector:@selector(setImageURL:)] ) {
             [segue.destinationViewController performSelector:@selector(setImageURL:) withObject:url];

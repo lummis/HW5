@@ -170,7 +170,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hg6-gj-cc1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1846" y="216"/>
+            <point key="canvasLocation" x="2042" y="205"/>
         </scene>
         <!--Navigation Controller - Photo Tags-->
         <scene sceneID="1tR-aT-Lu6">
@@ -240,6 +240,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="iaU-Rg-M3p"/>
+        <segue reference="qG3-0I-qxO"/>
     </inferredMetricsTieBreakers>
 </document>

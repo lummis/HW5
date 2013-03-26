@@ -10,8 +10,10 @@
 //#import "PhotoVC.h"
 
 @interface TitleTableVC : UITableViewController
+
 @property (nonatomic, strong) NSArray *photoArray;   //array of dictionaries
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSMutableArray *recents;  //array of dictionaries of recently shown photos
 @property (nonatomic) BOOL sortByRecent;   //NO for tagTable and titleTable, YES for recentsTable
+
 @end

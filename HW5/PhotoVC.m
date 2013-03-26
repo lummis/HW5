@@ -40,12 +40,16 @@
 }
 
 - (void) setImageURL:(NSURL *)imageURL {
+    LOG
     _imageURL = imageURL;
     [self resetImage];
 }
 
 - (void) viewDidLayoutSubviews {
-    [self adjustFrame];
+    LOG
+    if (self.imageView.image) { //don't do adjustFrame if photo hasn't loaded yet
+        [self adjustFrame];
+    }
 }
 
 - (UIView *) viewForZoomingInScrollView:(UIScrollView *)scrollView {
@@ -53,6 +57,7 @@
 }
 
 - (void) adjustFrame {  //zoom so all of photo fits on screen and set origin so photo is centered
+    LOG
     if (self.userHasZoomed) return;   //once user zooms we don't adjust any more
     CGFloat viewWidth = self.view.frame.size.width;
     CGFloat viewHeight = self.view.frame.size.height;
@@ -82,23 +87,39 @@
 }
 
 - (void) resetImage {
+    LOG
     if (self.scrollView) {
         self.scrollView.contentSize = CGSizeZero;   //is set below but only if we get a valid image
         self.imageView.image = nil;
         
-        NSData *imageData = [[NSData alloc] initWithContentsOfURL:self.imageURL];
-        UIImage *image = [[UIImage alloc] initWithData:imageData];
-        if (image) {
-            self.scrollView.zoomScale = 1.0;
-            self.scrollView.contentSize = image.size;
-            self.imageView.image = image;
-            self.userHasZoomed = NO;
-            [self adjustFrame];
-        }
+        NSURL *imageURL = self.imageURL;
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        dispatch_queue_t imageFetchQ = dispatch_queue_create("imageFetchQ", NULL);
+        dispatch_async(imageFetchQ, ^{
+            [NSThread sleepForTimeInterval:2.0];    //simulate network delay
+            NSData *imageData = [[NSData alloc] initWithContentsOfURL:self.imageURL];
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+            UIImage *image = [[UIImage alloc] initWithData:imageData];
+
+            if (self.imageURL == imageURL) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (image) {
+                        self.scrollView.zoomScale = 1.0;
+                        self.scrollView.contentSize = image.size;
+                        self.imageView.image = image;
+                        self.userHasZoomed = NO;
+                        [self adjustFrame];
+                    }
+                } );
+            }
+        } );
+
+
     }
 }
 
 - (UIImageView *) imageView {
+    LOG
     if (!!!_imageView) {
         _imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     }
@@ -107,6 +128,7 @@
 
 - (void)viewDidLoad
 {
+    LOG
     [super viewDidLoad];
         //    [UIApplication sharedApplication].statusBarHidden = YES;  //this messes up subsequent tableviews
 	[self.scrollView addSubview:self.imageView];
