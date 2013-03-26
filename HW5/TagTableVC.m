@@ -18,6 +18,14 @@
 
 @implementation TagTableVC
 
+- (void) refreshPhotoArray {
+    LOG
+    self.flickrPhotoArray = nil;
+    [self.tableView reloadData];
+    [self.refreshControl endRefreshing];
+    
+}
+
 - (NSArray *) flickrPhotoArray {
     if (!!!_flickrPhotoArray){
         _flickrPhotoArray = [FlickrFetcher stanfordPhotos];
@@ -51,6 +59,11 @@
 {
     [super viewDidLoad];
     self.title = @"Tags";
+    
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    refreshControl.tintColor = [UIColor orangeColor];
+    self.refreshControl = refreshControl;
+    [self.refreshControl addTarget:self action:@selector(refreshPhotoArray) forControlEvents:UIControlEventValueChanged];
 }
 
 #pragma mark - Table view data source

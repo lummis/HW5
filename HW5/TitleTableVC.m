@@ -19,14 +19,12 @@
 @implementation TitleTableVC
 
 - (void) setPhotoArray:(NSArray *)photoArray {
-    LOG
     _photoArray = photoArray;
     [self.tableView reloadData];
 }
 
 - (void)viewDidLoad
 {
-    LOG
     [super viewDidLoad];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.recents = [[defaults arrayForKey:@"recents"] mutableCopy];
@@ -34,7 +32,6 @@
 }
 
 - (NSMutableArray *) recents {
-    LOG
     if (!!!_recents) {
         _recents = [NSMutableArray arrayWithCapacity:1];
     }
@@ -45,7 +42,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    LOG
     return [self.photoArray count];
 }
 
@@ -58,7 +54,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    LOG
     static NSString *CellIdentifier = @"TableCell";
     AnyCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
@@ -75,7 +70,6 @@
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    LOG
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSDictionary *photo;
     NSString *title;
