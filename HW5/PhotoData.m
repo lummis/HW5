@@ -107,8 +107,8 @@
         //if url is in cache set index to its position
         //use url as string because NSUserDefaults can't store array containing NSURL objects
     for (int i = 0; i < [self.cacheTOC count]; i++) {
-        NSDictionary *d = [self.cacheTOC objectAtIndex:i];
-        if ( [[d valueForKey:@"urlString"] isEqualToString:[url absoluteString]] ) {
+        NSDictionary *d = self.cacheTOC[i];
+        if ( [d[@"urlString"] isEqualToString:[url absoluteString]] ) {
             index = i;
             break;
         }
@@ -118,12 +118,47 @@
     }
     
         //[url relativeString] and [url absoluteString] give the same string value
-    NSDictionary *urlDict = [NSDictionary dictionaryWithObject:[url absoluteString] forKey:@"urlString"];
+    NSDictionary *urlDict = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [url absoluteString], @"urlString",
+                             @"some filePath", @"filePath",
+                             [NSNumber numberWithInt:data.length], @"fileSize",
+                             nil];
     [self.cacheTOC insertObject:urlDict atIndex:0];
+    [self truncateCache];
     [[NSUserDefaults standardUserDefaults] setObject:self.cacheTOC forKey:@"cacheTOC"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
     NSLog(@"index: %d\n%@\n\n", index, self.cacheTOC);
+}
+
+#define MAXCACHESIZE 1500000    //1.5 million bytes
+    //remove the least recently used cacheTOC entries and the corresponding files
+    //until all files use no more than MAXCACHESIZE bytes
+- (void) truncateCache {
+    NSUInteger nFilesToKeep = 0;
+    NSUInteger bytesUsed = 0;
+    for (int i = 0; i < [self.cacheTOC count]; i++) {
+        NSDictionary *d = [self.cacheTOC objectAtIndex:i];
+        bytesUsed += [d[@"fileSize"] intValue];
+        if (bytesUsed > MAXCACHESIZE) {
+            break;
+        } else {
+            nFilesToKeep++;
+        }
+    }
+    while ( [self.cacheTOC count] > nFilesToKeep ) {
+        NSString *filePathToDelete = [self.cacheTOC lastObject][@"filePath"];
+        [self.cacheTOC removeLastObject];
+        [self deleteFileAtPath:filePathToDelete];
+    }
+}
+
+- (void) deleteFileAtPath:(NSString *)filePath {
+    NSLog(@"virtually deleting file at filePath: %@", filePath);
+}
+
+- (void) saveImageData:(NSData *)data atPath:(NSString *)filePath {
+    NSLog(@"virtually storing data at filePath: %@", filePath);
 }
 
 @end
