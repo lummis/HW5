@@ -55,7 +55,9 @@
 }
 
 - (UIImage *) imageForURL:(NSURL *)url {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     UIImage *image = [[UIImage alloc] initWithData:imageData];
     NSLog(@"\nimage URL: %@\nsize of imageData in bytes: %d\n\n", url, imageData.length);
     return image;

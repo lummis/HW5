@@ -110,11 +110,9 @@
         [self.spinner startAnimating];
         
         NSURL *requestedImageURL = self.imageURL;
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         dispatch_queue_t imageFetchQ = dispatch_queue_create("imageFetchQ", NULL);
         dispatch_async(imageFetchQ, ^{
-            [NSThread sleepForTimeInterval:2.0];    //simulate network delay
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//            [NSThread sleepForTimeInterval:2.0];    //simulate network delay
             UIImage *image = [self.db imageForURL:self.imageURL];
             if (image && self.imageURL == requestedImageURL) {
                 dispatch_async(dispatch_get_main_queue(), ^{
