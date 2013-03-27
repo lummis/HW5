@@ -54,4 +54,11 @@
     return url;
 }
 
+- (UIImage *) imageForURL:(NSURL *)url {
+    NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
+    UIImage *image = [[UIImage alloc] initWithData:imageData];
+    NSLog(@"\nimage URL: %@\nsize of imageData in bytes: %d\n\n", url, imageData.length);
+    return image;
+}
+
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "PhotoVC.h"
+#import "PhotoData.h"
 
 @interface PhotoVC ()  <UIScrollViewDelegate>
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
@@ -14,9 +15,17 @@
 @property (nonatomic) BOOL userHasZoomed; //set to NO on new photo, YES the first time user zooms
 @property (nonatomic, strong) UIPopoverController *urlPopover;
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
+@property (nonatomic, strong) PhotoData *db;
 @end
 
 @implementation PhotoVC
+
+-(PhotoData *) db {
+    if (!!!_db) {
+        _db = [[PhotoData alloc] init];
+    }
+    return _db;
+}
 
 - (UIActivityIndicatorView *) spinner {
     if (!!!_spinner) {
@@ -97,34 +106,27 @@
         self.scrollView.contentSize = CGSizeZero;   //is set below but only if we get a valid image
         self.imageView.image = nil;
         
-//        self.spinner.frame = CGRectMake(100., 100., 50., 50.);
         [self.view addSubview:self.spinner];
         [self.spinner startAnimating];
         
-        NSURL *imageURL = self.imageURL;
+        NSURL *requestedImageURL = self.imageURL;
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         dispatch_queue_t imageFetchQ = dispatch_queue_create("imageFetchQ", NULL);
         dispatch_async(imageFetchQ, ^{
             [NSThread sleepForTimeInterval:2.0];    //simulate network delay
-            NSData *imageData = [[NSData alloc] initWithContentsOfURL:self.imageURL];
             [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-            UIImage *image = [[UIImage alloc] initWithData:imageData];
-
-            if (self.imageURL == imageURL) {
+            UIImage *image = [self.db imageForURL:self.imageURL];
+            if (image && self.imageURL == requestedImageURL) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if (image) {
-                        [self.spinner stopAnimating];
-                        self.scrollView.zoomScale = 1.0;
-                        self.scrollView.contentSize = image.size;
-                        self.imageView.image = image;
-                        self.userHasZoomed = NO;
-                        [self adjustFrame];
-                    }
+                    [self.spinner stopAnimating];
+                    self.scrollView.zoomScale = 1.0;
+                    self.scrollView.contentSize = image.size;
+                    self.imageView.image = image;
+                    self.userHasZoomed = NO;
+                    [self adjustFrame];
                 } );
             }
         } );
-
-
     }
 }
 

@@ -14,5 +14,6 @@
 @property (nonatomic, strong) NSArray *alphabetizedTags;
 
 - (NSURL *) urlForPhoto:(NSDictionary *)photo;
+- (UIImage *) imageForURL:(NSURL *)url;
 
 @end
