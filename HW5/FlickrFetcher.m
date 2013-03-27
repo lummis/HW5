@@ -15,7 +15,6 @@
 
 + (NSDictionary *)executeFlickrFetch:(NSString *)query
 {
-    NSLog(@"YES");
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     query = [NSString stringWithFormat:@"%@&format=json&nojsoncallback=1&api_key=%@", query, FlickrAPIKey];
     query = [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -26,7 +25,6 @@
     if (error) NSLog(@"[%@ %@] JSON error: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), error.localizedDescription);
     if (NSLOG_FLICKR) NSLog(@"[%@ %@] received %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), results);
     
-    NSLog(@"NO");
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     return results;
 }
