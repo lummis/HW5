@@ -32,6 +32,7 @@
     return _baseFileName;
 }
 
+    //array of urls and corresponding imageData file references, most recent first
 - (NSMutableArray *) cacheTOC {
     if (!!!_cacheTOC) {
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
@@ -84,13 +85,27 @@
 
 - (UIImage *) imageForURL:(NSURL *)url {
     if ( !!!url ) return nil;
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    UIImage *image = [[UIImage alloc] initWithData:imageData];
-    NSLog(@"\nimage URL: %@\nsize of imageData in bytes: %d\n\n", url, imageData.length);
     
+    NSData *imageData = [self imageDataFromCacheForUrl:url];
+    if (!!!imageData) {
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        imageData = [[NSData alloc] initWithContentsOfURL:url];
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    }
+    NSLog(@"\nurl: %@    size of imageData in bytes: %d\n\n", url, imageData.length);
+    UIImage *image = [[UIImage alloc] initWithData:imageData];
+    [self updateCacheTOCWithURL:url imageData:imageData];
+    return image;
+}
+
+- (NSData *) imageDataFromCacheForUrl:(NSURL *)url {
+    return nil;
+}
+
+- (void) updateCacheTOCWithURL:(NSURL *)url imageData:(NSData *)data {
     NSInteger index = -1;
+        //if url is in cache set index to its position
+        //use url as string because NSUserDefaults can't store array containing NSURL objects
     for (int i = 0; i < [self.cacheTOC count]; i++) {
         NSDictionary *d = [self.cacheTOC objectAtIndex:i];
         if ( [[d valueForKey:@"urlString"] isEqualToString:[url absoluteString]] ) {
@@ -98,17 +113,17 @@
             break;
         }
     }
-
+    if (index != -1) {
+        [self.cacheTOC removeObjectAtIndex:index];  //we put it back at index 0 below
+    }
+    
         //[url relativeString] and [url absoluteString] give the same string value
     NSDictionary *urlDict = [NSDictionary dictionaryWithObject:[url absoluteString] forKey:@"urlString"];
-    if (index == -1) {
-        [self.cacheTOC addObject:urlDict];
-        [[NSUserDefaults standardUserDefaults] setObject:self.cacheTOC forKey:@"cacheTOC"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    [self.cacheTOC insertObject:urlDict atIndex:0];
+    [[NSUserDefaults standardUserDefaults] setObject:self.cacheTOC forKey:@"cacheTOC"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
     NSLog(@"index: %d\n%@\n\n", index, self.cacheTOC);
-    
-    return image;
 }
 
 @end
