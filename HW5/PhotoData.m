@@ -10,10 +10,38 @@
 #import "FlickrFetcher.h"
 
 @interface PhotoData()
-
+@property (nonatomic, strong) NSString *baseFileName;
+@property (nonatomic, strong) NSMutableArray *cacheTOC;    //TOC = Table of Contents
+                                                    //array of dicts, each dict has url and fileName for imageData, most recent first
 @end
 
 @implementation PhotoData
+
+- (NSString *) baseFileName {
+    if (!!!_baseFileName) {
+        NSString *tempPath = NSTemporaryDirectory();
+        NSString *deviceType;
+        if ( [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad ) {
+            deviceType = @"iPad";
+        } else {
+            deviceType = @"iPhone";
+        }
+        _baseFileName = [tempPath stringByAppendingPathComponent:deviceType];
+        NSLog (@"_baseFileName: %@", _baseFileName);
+    }
+    return _baseFileName;
+}
+
+- (NSMutableArray *) cacheTOC {
+    if (!!!_cacheTOC) {
+        NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+        _cacheTOC = [[ud arrayForKey:@"cacheTOC"] mutableCopy];
+        if (!!!_cacheTOC) {
+             _cacheTOC = [[NSMutableArray alloc] initWithCapacity:1];
+        }
+    }
+    return _cacheTOC;
+}
 
 - (NSArray *) flickrPhotoArray {
     if (!!!_flickrPhotoArray){
@@ -55,11 +83,31 @@
 }
 
 - (UIImage *) imageForURL:(NSURL *)url {
+    if ( !!!url ) return nil;
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     UIImage *image = [[UIImage alloc] initWithData:imageData];
     NSLog(@"\nimage URL: %@\nsize of imageData in bytes: %d\n\n", url, imageData.length);
+    
+    NSInteger index = -1;
+    for (int i = 0; i < [self.cacheTOC count]; i++) {
+        NSDictionary *d = [self.cacheTOC objectAtIndex:i];
+        if ( [[d valueForKey:@"urlString"] isEqualToString:[url absoluteString]] ) {
+            index = i;
+            break;
+        }
+    }
+
+        //[url relativeString] and [url absoluteString] give the same string value
+    NSDictionary *urlDict = [NSDictionary dictionaryWithObject:[url absoluteString] forKey:@"urlString"];
+    if (index == -1) {
+        [self.cacheTOC addObject:urlDict];
+        [[NSUserDefaults standardUserDefaults] setObject:self.cacheTOC forKey:@"cacheTOC"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    NSLog(@"index: %d\n%@\n\n", index, self.cacheTOC);
+    
     return image;
 }
 
