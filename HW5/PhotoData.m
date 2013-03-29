@@ -96,11 +96,11 @@
     }
     NSLog(@"\nurl: %@    size of imageData in bytes: %d\n\n", url, imageData.length);
     UIImage *image = [[UIImage alloc] initWithData:imageData];
-    [self updateCacheTOCWithURL:url imageData:imageData];
+    [self updateCacheWithURL:url imageData:imageData];
     return image;
 }
 
-- (void) updateCacheTOCWithURL:(NSURL *)url imageData:(NSData *)data {
+- (void) updateCacheWithURL:(NSURL *)url imageData:(NSData *)data {
     NSInteger index = -1;
         //if url is in cache set index to its position
         //use url as string because NSUserDefaults can't store array containing NSURL objects
@@ -178,6 +178,7 @@
 }
 
 - (NSString *) baseFileName {
+    LOG
     if (!!!_baseFileName) {
         NSArray *cachesPaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         _baseFileName =  [cachesPaths objectAtIndex:0];
@@ -186,17 +187,23 @@
 }
 
 - (void) deleteFileAt:(NSString *)fileString {
-    NSError *err;
-    BOOL status = [[NSFileManager defaultManager] removeItemAtPath:fileString error:&err];
-    NSLog(@"deleting file at fileString: %@... status: %d", fileString, status);
-    if (err) NSLog(@"err: %@", err);
+    dispatch_queue_t deleteFileQ = dispatch_queue_create("deleteFileQ", NULL);
+    dispatch_async(deleteFileQ, ^{
+        NSError *err;
+        BOOL status = [[NSFileManager defaultManager] removeItemAtPath:fileString error:&err];
+        NSLog(@"deleting file at fileString: %@... status: %d", fileString, status);
+        if (err) NSLog(@"err: %@", err);
+    } );
 }
 
 - (void) saveImageData:(NSData *)data at:(NSString *)fileString {
-    NSError *err;
-    BOOL status = [data writeToFile:fileString options:NSDataWritingAtomic error:&err];
-    NSLog(@"writing data at fileString: %@... status: %d", fileString, status);
-    NSLog(@"err: %@", err);
+    dispatch_queue_t writeFileQ = dispatch_queue_create("writeFileQ", NULL);
+    dispatch_async(writeFileQ, ^{
+        NSError *err;
+        BOOL status = [data writeToFile:fileString options:NSDataWritingAtomic error:&err];
+        NSLog(@"writing data at fileString: %@... status: %d", fileString, status);
+        NSLog(@"err: %@", err);
+    } );
 }
 
 @end

@@ -10,7 +10,7 @@
 #import "PhotoData.h"
 
 @interface PhotoVC ()  <UIScrollViewDelegate>
-@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+@property (nonatomic, weak) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic) BOOL userHasZoomed; //set to NO on new photo, YES the first time user zooms
 @property (nonatomic, strong) UIPopoverController *urlPopover;
