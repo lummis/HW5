@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 ElectricTurkeySoftware. All rights reserved.
 //
 
-#define MAXCACHESIZE 1500000    //1.5 million bytes
-
 #import "PhotoData.h"
 #import "FlickrFetcher.h"
 
@@ -17,6 +15,7 @@
 //TOC = Table of Contents. array of dicts, most recent first
 //each dict contains url, fileString for name of imageData file, size of imageData
 @property (nonatomic, strong) NSMutableArray *cacheTOC;
+@property (nonatomic) NSUInteger maxCacheSize;
 
 @end
 
@@ -32,6 +31,14 @@
         }
     }
     return _cacheTOC;
+}
+
+- (NSUInteger) maxCacheSize {
+    if (!!!_maxCacheSize) {
+        _maxCacheSize = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad ?
+        3500000 : 1500000;
+    }
+    return _maxCacheSize;
 }
 
 - (NSArray *) flickrPhotoArray {
@@ -77,6 +84,11 @@
     if ( !!!url ) return nil;
     
     NSData *imageData = [self imageDataFromCacheForUrl:url];
+    if (imageData) {
+        NSLog(@"got image data from file. length: %d", [imageData length]);
+    } else {
+        NSLog(@"did NOT get image data from file.");
+    }
     if (!!!imageData) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         imageData = [[NSData alloc] initWithContentsOfURL:url];
@@ -86,10 +98,6 @@
     UIImage *image = [[UIImage alloc] initWithData:imageData];
     [self updateCacheTOCWithURL:url imageData:imageData];
     return image;
-}
-
-- (NSData *) imageDataFromCacheForUrl:(NSURL *)url {
-    return nil;
 }
 
 - (void) updateCacheTOCWithURL:(NSURL *)url imageData:(NSData *)data {
@@ -115,6 +123,7 @@
         //this is a new url so add to the cache
         //[url relativeString] and [url absoluteString] give the same string value
     NSString *fileString = [self fileStringFromURL:url];
+    NSLog(@"fileString: %@", fileString);
     NSDictionary *urlDict = [NSDictionary dictionaryWithObjectsAndKeys:
                              [url absoluteString], @"urlString",
                              fileString, @"fileString",
@@ -134,14 +143,14 @@
 }
 
     //remove the least recently used cacheTOC entries and the corresponding files
-    //until all files use no more than MAXCACHESIZE bytes
+    //until all files use no more than self.maxCacheSize bytes
 - (void) truncateCache {
     NSUInteger nFilesToKeep = 0;
     NSUInteger bytesUsed = 0;
     for (int i = 0; i < [self.cacheTOC count]; i++) {
         NSDictionary *d = [self.cacheTOC objectAtIndex:i];
         bytesUsed += [d[@"fileSize"] intValue];
-        if (bytesUsed > MAXCACHESIZE) {
+        if (bytesUsed > self.maxCacheSize) {
             break;
         } else {
             nFilesToKeep++;
@@ -154,31 +163,40 @@
     }
 }
 
+- (NSData *) imageDataFromCacheForUrl:(NSURL *)url {
+    NSString *s = [self fileStringFromURL:url];
+    NSData *d = [[NSData alloc] initWithContentsOfFile:s];
+    return d;
+}
+
+    //with url as a string, get the string after the last slash, remove extension (.jpg), prepend caches path
+- (NSString *) fileStringFromURL:(NSURL *)url {
+    NSString *s0 = [url description];
+    NSRange r0 = [s0 rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/"] options:NSBackwardsSearch];
+    NSString *s1 = [[s0 substringFromIndex:r0.location + 1] stringByDeletingPathExtension];
+    return [self.baseFileName stringByAppendingPathComponent:s1];
+}
+
 - (NSString *) baseFileName {
     if (!!!_baseFileName) {
-        NSString *tempPath = NSTemporaryDirectory();
-        NSString *deviceType;
-        if ( [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad ) {
-            deviceType = @"iPad";
-        } else {
-            deviceType = @"iPhone";
-        }
-        _baseFileName = [[tempPath stringByAppendingPathComponent:deviceType] stringByAppendingString:@"/"];
+        NSArray *cachesPaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        _baseFileName =  [cachesPaths objectAtIndex:0];
     }
     return _baseFileName;
 }
 
-- (NSString *) fileStringFromURL:(NSURL *)url {
-    NSString *fileName = [[[url pathComponents] lastObject] stringByDeletingPathExtension];
-    return [self.baseFileName stringByAppendingString:fileName];
-}
-
 - (void) deleteFileAt:(NSString *)fileString {
-    NSLog(@"virtually deleting file at fileString: %@", fileString);
+    NSError *err;
+    BOOL status = [[NSFileManager defaultManager] removeItemAtPath:fileString error:&err];
+    NSLog(@"deleting file at fileString: %@... status: %d", fileString, status);
+    if (err) NSLog(@"err: %@", err);
 }
 
 - (void) saveImageData:(NSData *)data at:(NSString *)fileString {
-    NSLog(@"virtually storing data at fileString: %@", fileString);
+    NSError *err;
+    BOOL status = [data writeToFile:fileString options:NSDataWritingAtomic error:&err];
+    NSLog(@"writing data at fileString: %@... status: %d", fileString, status);
+    NSLog(@"err: %@", err);
 }
 
 @end
