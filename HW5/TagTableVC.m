@@ -7,7 +7,6 @@
 //
 
 #import "TagTableVC.h"
-#import "FlickrFetcher.h"
 #import "AnyCell.h"
 #import "PhotoData.h"
 
@@ -25,7 +24,6 @@
 }
 
 - (void) refreshPhotoArray {
-    LOG
     self.db.flickrPhotoArray = nil;
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
@@ -56,8 +54,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-//    NSArray *keys = [self.flickrTagDict allKeys];
-    
     static NSString *CellIdentifier = @"TableCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
@@ -80,6 +76,7 @@
             if ( [segue.destinationViewController respondsToSelector:@selector(setPhotoArray:)] ) {
                 NSMutableArray *itemsWithThisTag = [[NSMutableArray alloc] initWithCapacity:1];
                 for (NSDictionary *d in self.db.flickrPhotoArray) {
+                    LOG
                     if ( [d[@"tags"] rangeOfString:selectedTag].location != NSNotFound ) {
                         [itemsWithThisTag addObject:d];
                     }

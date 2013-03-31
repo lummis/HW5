@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7D0183D517066054003C7FA2 /* DataCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D0183D417066054003C7FA2 /* DataCache.m */; };
 		7D08954416FE847D00C98401 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D08954316FE847D00C98401 /* UIKit.framework */; };
 		7D08954616FE847D00C98401 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D08954516FE847D00C98401 /* Foundation.framework */; };
 		7D08954816FE847D00C98401 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D08954716FE847D00C98401 /* CoreGraphics.framework */; };
@@ -32,6 +33,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7D0183D317066054003C7FA2 /* DataCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataCache.h; sourceTree = "<group>"; };
+		7D0183D417066054003C7FA2 /* DataCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataCache.m; sourceTree = "<group>"; };
 		7D08954016FE847D00C98401 /* HW5.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HW5.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D08954316FE847D00C98401 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		7D08954516FE847D00C98401 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -165,6 +168,8 @@
 		7DF7E91D17021872000A3765 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				7D0183D317066054003C7FA2 /* DataCache.h */,
+				7D0183D417066054003C7FA2 /* DataCache.m */,
 				7DF7E91E170219AC000A3765 /* PhotoData.h */,
 				7DF7E91F170219AC000A3765 /* PhotoData.m */,
 				7D08957916FE857500C98401 /* FlickrAPIKey.h */,
@@ -254,6 +259,7 @@
 				7D08958216FE857500C98401 /* RecentsTableVC.m in Sources */,
 				7D08958316FE857500C98401 /* FlickrFetcher.m in Sources */,
 				7DF7E920170219AC000A3765 /* PhotoData.m in Sources */,
+				7D0183D517066054003C7FA2 /* DataCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

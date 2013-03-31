@@ -11,7 +11,6 @@
 @implementation RecentsTableVC
 
 - (void) viewWillAppear:(BOOL)animated {
-    LOG
     [super viewWillAppear:NO];
     self.recents = [[[NSUserDefaults standardUserDefaults] arrayForKey:@"recents"] mutableCopy];
     [self setPhotoArray:self.recents];
@@ -24,7 +23,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    LOG
     int recentsCount = [self.recents count];    //to make it get recents from userDefaults
     return recentsCount ;
 }

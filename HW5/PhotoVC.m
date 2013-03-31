@@ -72,7 +72,7 @@
     return self.imageView;
 }
 
-- (void) adjustFrame {  //zoom so all of photo fits on screen and set origin so photo is centered
+- (void) adjustFrame {  //set size so all of photo fits on screen & set origin so it's centered
     if (self.userHasZoomed) return;   //once user zooms we don't adjust any more
     CGFloat viewWidth = self.view.frame.size.width;
     CGFloat viewHeight = self.view.frame.size.height;
@@ -110,6 +110,7 @@
         [self.spinner startAnimating];
         
         NSURL *requestedImageURL = self.imageURL;
+
         dispatch_queue_t imageFetchQ = dispatch_queue_create("imageFetchQ", NULL);
         dispatch_async(imageFetchQ, ^{
 //            [NSThread sleepForTimeInterval:2.0];    //simulate network delay
@@ -127,6 +128,7 @@
         } );
     }
 }
+
 
 - (UIImageView *) imageView {
     if (!!!_imageView) {
