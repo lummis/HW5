@@ -15,6 +15,7 @@
 - (NSArray *) flickrPhotoArray {
     LOG
     if (!!!_flickrPhotoArray){
+        NSLog(@"fetching");
         _flickrPhotoArray = [FlickrFetcher stanfordPhotos];
     }
     return _flickrPhotoArray;
@@ -35,10 +36,15 @@
         _flickrTagDict = md;
     }
     
-    self.alphabetizedTags = [[_flickrTagDict allKeys] sortedArrayUsingComparator:^(id a, id b){
-        return [a caseInsensitiveCompare:b];
-    }];
+//    self.alphabetizedTags = [[_flickrTagDict allKeys] sortedArrayUsingComparator:^(id a, id b){
+//        return [a caseInsensitiveCompare:b];
+//    }];
     
+    self.alphabetizedTags = [[_flickrTagDict allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    
+//    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification
+//                                                            notificationWithName:@"photoDataUpdated"
+//                                                            object:self ]];
     return _flickrTagDict;
 }
 

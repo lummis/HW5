@@ -16,6 +16,10 @@
 
 @implementation TagTableVC
 
+//- (void) dealloc {
+//    [[NSNotificationCenter defaultCenter] removeObserver:self];
+//}
+
 -(PhotoData *) db {
     if (!!!_db) {
         _db = [[PhotoData alloc] init];
@@ -24,6 +28,8 @@
 }
 
 - (void) refreshPhotoArray {
+    [self.refreshControl beginRefreshing];
+    NSLog(@"refreshing");
     self.db.flickrPhotoArray = nil;
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
@@ -38,6 +44,9 @@
     refreshControl.tintColor = [UIColor orangeColor];
     self.refreshControl = refreshControl;
     [self.refreshControl addTarget:self action:@selector(refreshPhotoArray) forControlEvents:UIControlEventValueChanged];
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshPhotoArray)
+//                                                 name:@"photoDataUpdated" object:nil];
 }
 
 #pragma mark - Table view data source
