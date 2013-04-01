@@ -15,5 +15,6 @@
 
 - (NSURL *) urlForPhoto:(NSDictionary *)photo;
 - (UIImage *) imageForURL:(NSURL *)url;
+- (void) updateFlickrPhotoArray;
 
 @end

@@ -33,7 +33,6 @@
 }
 
 -(id) init {
-    LOG
     if ( ( self = [super init] ) ) {
 
     }
@@ -42,7 +41,6 @@
 
     //array of urls and corresponding imageData file references, most recent first
 - (NSMutableArray *) cacheTOC {
-    LOG
     if (!!!_cacheTOC) {
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         _cacheTOC = [[ud arrayForKey:@"cacheTOC"] mutableCopy];
@@ -81,7 +79,6 @@
 }
 
 - (void) updateCacheWithURL:(NSURL *)url imageData:(NSData *)data {
-    LOG
     NSInteger index = -1;
         //if url is in cache set index to its position
         //use url as string because NSUserDefaults can't store array containing NSURL objects
@@ -104,7 +101,6 @@
         //this is a new url so add to the cache
         //[url relativeString] and [url absoluteString] give the same string value
     NSString *fileString = [self fileStringFromURL:url];
-    NSLog(@"fileString: %@", fileString);
     NSDictionary *urlDict = [NSDictionary dictionaryWithObjectsAndKeys:
                              [url absoluteString], @"urlString",
                              fileString, @"fileString",
@@ -114,32 +110,22 @@
     [self saveImageData:data at:fileString];
     [self truncateCache];
     [self saveCacheTOC];
-    
-    NSLog(@"index: %d\n%@\n\n", index, self.cacheTOC);
 }
 
 - (NSData *) imageDataForURL:(NSURL *)url {
-    LOG
     if ( !!!url ) return nil;
     
     NSData *imageData = [self imageDataFromCacheForUrl:url];
-    if (imageData) {
-        NSLog(@"got image data from file. length: %d", [imageData length]);
-    } else {
-        NSLog(@"did NOT get image data from file.");
-    }
     if (!!!imageData) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         imageData = [[NSData alloc] initWithContentsOfURL:url];
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     }
-    NSLog(@"\nurl: %@    size of imageData in bytes: %d\n\n", url, imageData.length);
     [self updateCacheWithURL:url imageData:imageData];
     return imageData;
 }
 
 - (NSData *) imageDataFromCacheForUrl:(NSURL *)url {
-    LOG
     NSString *s = [self fileStringFromURL:url];
     NSData *d = [[NSData alloc] initWithContentsOfFile:s];
     return d;
@@ -147,7 +133,6 @@
 
 
 - (void) saveCacheTOC {
-    LOG
     [[NSUserDefaults standardUserDefaults] setObject:self.cacheTOC forKey:@"cacheTOC"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -155,7 +140,6 @@
     //remove the least recently used cacheTOC entries and the corresponding files
     //until all files use no more than self.maxCacheSize bytes
 - (void) truncateCache {
-    LOG
     NSUInteger nFilesToKeep = 0;
     NSUInteger bytesUsed = 0;
     for (int i = 0; i < [self.cacheTOC count]; i++) {
@@ -185,11 +169,9 @@
     //make ~/Library/Caches/HW5Files directory to hold the imageDate files for each photo in the cacheTOC
     //make the subdirectory if it doesn't already exist
 - (NSString *) cacheDirectoryName {
-    LOG
     if (!!!_cacheDirectoryName) {
         NSArray *cachesPaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         _cacheDirectoryName =  [[cachesPaths objectAtIndex:0] stringByAppendingPathComponent:CACHEDIRECTORYNAME];
-        NSLog(@"_cacheDirectoryName: %@", _cacheDirectoryName);
         if ( !!! [[NSFileManager defaultManager] fileExistsAtPath:_cacheDirectoryName] ) {
             NSError *err;
             BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:_cacheDirectoryName
@@ -205,7 +187,6 @@
     //make string version of file name for an imageData file, using url as a string
     //from url as a string get the substring after the last slash, remove extension (.jpg), prepend caches path
 - (NSString *) fileStringFromURL:(NSURL *)url {
-    LOG
     NSString *s0 = [url description];
     NSRange r0 = [s0 rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/"] options:NSBackwardsSearch];
     NSString *s1 = [s0 substringFromIndex:r0.location + 1]; //+1 to skip over last slash
@@ -214,18 +195,16 @@
 }
 
 - (void) saveImageData:(NSData *)data at:(NSString *)fileString {
-    LOG
     dispatch_queue_t writeFileQ = dispatch_queue_create("writeFileQ", NULL);
     dispatch_async(writeFileQ, ^{
         NSError *err;
         BOOL status = [data writeToFile:fileString options:NSDataWritingAtomic error:&err];
-        NSLog(@"writing data at fileString: %@... status: %d", fileString, status);
+        NSLog(@"writing file at: %@... status: %d", fileString, status);
         NSLog(@"err: %@", err);
     } );
 }
 
 - (void) deleteFileAt:(NSString *)fileString {
-    LOG
     dispatch_queue_t deleteFileQ = dispatch_queue_create("deleteFileQ", NULL);
     dispatch_async(deleteFileQ, ^{
         NSError *err;

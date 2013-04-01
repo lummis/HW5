@@ -12,13 +12,18 @@
 
 @implementation PhotoData
 
-- (NSArray *) flickrPhotoArray {
-    LOG
-    if (!!!_flickrPhotoArray){
-        NSLog(@"fetching");
-        _flickrPhotoArray = [FlickrFetcher stanfordPhotos];
-    }
-    return _flickrPhotoArray;
+- (void) updateFlickrPhotoArray {
+    dispatch_queue_t dataFetchQ = dispatch_queue_create("dataFetchQ", NULL);
+    dispatch_async( dataFetchQ, ^{
+        self.flickrPhotoArray = [FlickrFetcher stanfordPhotos];
+            //if we don't run something on the main queue we have to wait for the thread to time out
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.flickrTagDict = nil;   //make tag dict get created (or recreated)
+            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification
+                                                                    notificationWithName:@"photoDataUpdated"
+                                                                    object:self]];
+        } );
+    } );
 }
 
     //key is a photo tag. value is number of photos with that tag. a photo can have many tags
@@ -35,21 +40,17 @@
         [md removeObjectsForKeys:@[@"cs193pspot", @"portrait", @"landscape"]];
         _flickrTagDict = md;
     }
+    self.alphabetizedTags = [[_flickrTagDict allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    return _flickrTagDict;
     
+//        //alternate sorting method
 //    self.alphabetizedTags = [[_flickrTagDict allKeys] sortedArrayUsingComparator:^(id a, id b){
 //        return [a caseInsensitiveCompare:b];
 //    }];
     
-    self.alphabetizedTags = [[_flickrTagDict allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-    
-//    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification
-//                                                            notificationWithName:@"photoDataUpdated"
-//                                                            object:self ]];
-    return _flickrTagDict;
 }
 
 - (NSURL *) urlForPhoto:(NSDictionary *)photo {
-    LOG
     NSURL *url;
     if ( [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad ) {
         url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatOriginal];
